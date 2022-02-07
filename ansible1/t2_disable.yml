@@ -1,0 +1,25 @@
+---
+- name: configure web service
+  hosts: nodes
+  tasks:
+    - name: remove httpd package
+      package:
+        name: httpd
+        state: absent
+
+    - name: delete file index.html
+      ansible.builtin.file:
+        path: /var/www/html/index.html
+        state: absent
+
+    - name: permit PERMANENT traffic for http service
+      ansible.posix.firewalld:
+        service: http
+        permanent: yes
+        state: disabled
+
+    - name: permit traffic for http service
+      ansible.posix.firewalld:
+        service: http
+        state: disabled
+...

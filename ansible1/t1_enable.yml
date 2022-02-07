@@ -1,0 +1,33 @@
+---
+- name: configure web service
+  hosts: nodes
+  tasks:
+    - name: install httpd package
+      package: name=httpd
+
+    - name: start httpd service
+      ansible.builtin.service:
+        name: httpd
+        state: started
+
+    - name: enable httpd service
+      ansible.builtin.systemd:
+        name: httpd
+        enabled: yes
+
+    - name: create file index.html
+      ansible.builtin.copy:
+        content: 'Welcome to my web server'
+        dest: /var/www/html/index.html
+
+    - name: permit PERMANENT traffic for http service
+      ansible.posix.firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+
+    - name: permit traffic for http service
+      ansible.posix.firewalld:
+        service: http
+        state: enabled
+...

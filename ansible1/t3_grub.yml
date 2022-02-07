@@ -1,0 +1,21 @@
+---
+- name: configure grub
+  hosts: nodes
+  tasks:
+    - name: change /etc/default/grub
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        backrefs: yes
+        regexp: '^(GRUB_CMDLINE_LINUX="((?! net.ifnames=0 biosdevname=0).)*)"'
+        line: '\1 net.ifnames=0 biosdevname=0"'
+      register: gchanged
+
+    - name: show param
+      debug:
+        var: gchanged.changed
+        verbosity: 1
+
+    - name: execute grub2-mkconfig
+      command: /usr/sbin/grub2-mkconfig
+      when: gchanged.changed
+...
