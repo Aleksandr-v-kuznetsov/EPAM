@@ -1,0 +1,24 @@
+---
+- name: create users
+  hosts: all
+  vars_files:
+    - users.yml
+  tasks:
+    - name: print array values
+      debug:
+        msg: User {{ item.key }} has home directory {{ item.value.homedir }} and passwd {{ item.value.pwsec }}
+        verbosity: 1
+      with_dict: "{{ users }}"
+      loop_control:
+        label: "{{ item.key }}"
+
+    - name: create user
+      ansible.builtin.user:
+        name: "{{ item.key }}"
+        home: "{{ item.value.homedir }}"
+        comment: "{{ item.key }}@example.com"
+        password: "{{ item.value.pwsec | password_hash('sha512', 'anysalt') }}"
+        update_password: on_create
+      loop: "{{ users | dict2items }}"
+      loop_control:
+        label: "{{ item.key }}"
