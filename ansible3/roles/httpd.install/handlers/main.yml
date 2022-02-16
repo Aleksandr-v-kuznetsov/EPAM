@@ -1,0 +1,6 @@
+---
+# handlers file for httpd.install
+    - name: restart_web
+      service:
+        name: "{{ apache_service }}"
+        state: restarted

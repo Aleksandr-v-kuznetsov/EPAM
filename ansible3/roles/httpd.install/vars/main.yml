@@ -1,0 +1,4 @@
+---
+# vars file for httpd.install
+apache_service: httpd
+apache_package: httpd

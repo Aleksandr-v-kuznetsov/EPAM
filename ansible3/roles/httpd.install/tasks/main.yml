@@ -1,0 +1,42 @@
+---
+    - name: install httpd package
+      package:
+        name: "{{ apache_package }}"
+
+    - name: start httpd service
+      ansible.builtin.service:
+        name: "{{ apache_service }}"
+        state: started
+        enabled: yes
+
+    - name: create file index.html
+      template:
+        src: templates/index.j2
+        dest: /var/www/html/index.html
+      notify:
+        - restart_web
+
+    - name: Read local IPs
+      ansible.builtin.setup:
+        filter: ansible_all_ipv4_addresses
+      delegate_to: 127.0.0.1
+      register: local_facts
+      become: false
+
+    - name: create htaccess
+      template:
+        src: templates/htaccess.j2
+        dest: /var/www/html/.htaccess
+      notify:
+        - restart_web
+
+    - name: permit PERMANENT traffic for http service
+      ansible.posix.firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+
+    - name: permit traffic for http service
+      ansible.posix.firewalld:
+        service: http
+        state: enabled

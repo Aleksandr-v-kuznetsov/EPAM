@@ -1,0 +1,8 @@
+---
+- name: configure web service
+  hosts: nodes
+
+  roles:
+    - role: httpd.install
+      include_hostname: true
+...

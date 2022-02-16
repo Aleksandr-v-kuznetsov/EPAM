@@ -1,0 +1,45 @@
+---
+# tasks file for vsftpd.install
+  - name: install vsftpd
+    yum:
+      name:
+        - vsftpd
+        - python3-libselinux
+        - python3-libsemanage
+      state: present
+
+  - name: template copy FTP config
+    template:
+      src: vsftpd.j2
+      dest: /etc/vsftpd/vsftpd.conf
+    notify:
+        - restart_service
+
+  - name: create upload dir
+    ansible.builtin.file:
+      path: "{{ anon_upload }}"
+      state: directory
+      mode: 0777
+      setype: public_content_rw_t
+  - name: Set SElinux ftpd_anon_write flag on and keep it persistent across reboots
+    ansible.posix.seboolean:
+      name: ftpd_anon_write
+      state: yes
+      persistent: yes
+
+  - name: permit PERMANENT traffic for ftp service
+    ansible.posix.firewalld:
+      service: ftp
+      permanent: yes
+      state: enabled
+
+  - name: permit traffic for ftp service
+    ansible.posix.firewalld:
+      service: ftp
+      state: enabled
+
+  - name: enable and start vsftpd service
+    ansible.builtin.service:
+      name: vsftpd
+      state: started
+      enabled: yes

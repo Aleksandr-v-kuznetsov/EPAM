@@ -1,0 +1,8 @@
+---
+# vars file for vsftpd.install
+anonymous_enable: yes
+local_enable: yes
+write_enable: yes
+anon_upload_enable: yes
+anon_root: /var/ftp/pub/
+anon_upload: "{{ anon_root }}/upload"
