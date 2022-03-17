@@ -1,6 +1,6 @@
 ---
 - name: configure ftp service
-  hosts: nodes
+  hosts: all
 
   roles:
     - role: vsftpd.install

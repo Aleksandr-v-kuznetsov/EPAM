@@ -1,6 +1,6 @@
 ---
 - name: configure web service
-  hosts: nodes
+  hosts: all
 
   roles:
     - role: httpd.install
